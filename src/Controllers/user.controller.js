@@ -48,20 +48,26 @@ const registerUser = asyncHandler(async (req, res) => {
    }
 
    // checks for Image and cover Image.
-   const avatarLocalpath = req.files?.avatar[0]?.path;
+   let avatarLocalpath = req.files.avatar[0].path;
+
    // const coverImageLocalpath = req.files?.coverImage[0].path;
 
    let coverImageLocalPath;
     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
         coverImageLocalPath = req.files.coverImage[0].path
     }
+//     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
+//       avatarLocalpath = req.files.avatar[0].path
+//   }
 
+  console.log(avatarLocalpath)
    if (!avatarLocalpath) {
       throw new ApiError(400, "Avatar is required");
    }
    // Upload to cloudinary.
 
    const avatar = await uploadOnCloudinary(avatarLocalpath);
+   console.log(avatar)
    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
    if (!avatar) {
       throw new ApiError(400, "Avatar is required");
