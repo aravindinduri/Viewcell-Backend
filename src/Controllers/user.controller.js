@@ -43,6 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
    // checks if User is Already exsist or not.
    const exsistedUser = await User.findOne({ $or: [{ email }, { username }] });
+   console.log(exsistedUser)
    if (exsistedUser) {
       throw new ApiError(401, "User alredy Exsists");
    }
@@ -67,7 +68,6 @@ const registerUser = asyncHandler(async (req, res) => {
    // Upload to cloudinary.
 
    const avatar = await uploadOnCloudinary(avatarLocalpath);
-   console.log(avatar)
    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
    if (!avatar) {
       throw new ApiError(400, "Avatar is required");
