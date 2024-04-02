@@ -106,13 +106,12 @@ const getAllVideos = asyncHandler(async (req, res) => {
 )
 
 const publishAVideo = asyncHandler(async (req, res) => {
-
+    console.log('asdcv')
     const { title, description } = req.body
 
     if (!(title?.trim()) || !(description?.trim())) {
         throw new ApiError(404, "title and description reqired")
     }
-    // TODO: get video, upload to cloudinary, create video.
 
     if (!(req.files && Array.isArray(req.files.videoFile) && req.files.videoFile.length > 0)) {
         throw new ApiError(400, "Video file is required!!!");
@@ -156,15 +155,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: get video by id
-    /* information we need :
-      owner : username ,
-              avatar,
-              fullname.
-       no.of likes ,
-       no.of views.
-    
-    */
 
     if (!videoId.trim() || !isValidObjectId(videoId)) {
         throw new ApiError(400, "Video id is Required")

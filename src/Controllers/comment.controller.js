@@ -6,7 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Video } from "../models/videos.models.js";
 
 const getVideoComments = asyncHandler(async (req, res) => {
-    //TODO: get all comments for a video
     const { videoId } = req.params
     let { page = 1, limit = 10 } = req.query
     page = isNaN(page) ? 1 : Number(page)
@@ -74,7 +73,6 @@ const getVideoComments = asyncHandler(async (req, res) => {
 })
 
 const addComment = asyncHandler(async (req, res) => {
-    // TODO: add a comment to a video
     const { videoId } = req.params
     const content = req.body?.content?.trim();
     if (!videoId || !isValidObjectId(videoId)) {
@@ -121,7 +119,7 @@ const updateComment = asyncHandler(async (req, res) => {
     const comment = await Comment.findByIdAndUpdate(commentId,
         {
             $set: {
-                content: commentContent // can be a possible error
+                content: commentContent 
             },
         },
         { new: true }
@@ -139,7 +137,6 @@ const updateComment = asyncHandler(async (req, res) => {
 })
 
 const deleteComment = asyncHandler(async (req, res) => {
-    // TODO: delete a comment
     const { commentId } = req.params
     if (!commentId || !isValidObjectId(commentId)) {
         throw new ApiError(400, "Comment id is required")

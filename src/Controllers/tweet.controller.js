@@ -5,7 +5,6 @@ import { APiResponce } from "../utils/apiResponce.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
-    //TODO: create tweet
     const { content } = req.body
     if (!content.trim()) {
         throw new ApiError(400, "Content is Required")
@@ -28,7 +27,6 @@ const createTweet = asyncHandler(async (req, res) => {
 })
 
 const getUserTweets = asyncHandler(async (req, res) => {
-    // TODO: get user tweets
     let { page = 1, limit = 10, userId } = req.params
     page = isNaN(page) ? 1 : Number(page)
     limit = isNaN(limit) ? 10 : Number(limit)
@@ -94,7 +92,6 @@ const getUserTweets = asyncHandler(async (req, res) => {
 })
 
 const updateTweet = asyncHandler(async (req, res) => {
-    //TODO: update tweet
     const { tweetId } = req.params
     if (!tweetId.trim() || !isValidObjectId(tweetId)) {
         throw new ApiError("Inavalid or Unable to find Tweet Id")
@@ -124,7 +121,6 @@ const updateTweet = asyncHandler(async (req, res) => {
 })
 
 const deleteTweet = asyncHandler(async (req, res) => {
-    //TODO: delete tweet
     const { tweetId } = req.params
     if (!tweetId || !isValidObjectId(tweetId)) {
         throw new ApiError(400, "Tweet id is Not avalialble  or not valid")

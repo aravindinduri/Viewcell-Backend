@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { Video } from "../models/videos.models.js"
 
 const getChannelStats = asyncHandler(async (req, res) => {
-    // TODO: Get the channel stats like total video views, total subscribers, total videos, total likes etc.
     const channelStats = await Video.aggregate([
         {
             $match: {
@@ -80,7 +79,6 @@ const getChannelStats = asyncHandler(async (req, res) => {
 })
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-    // TODO: Get all the videos uploaded by the channel
     let { page = 1, limit = 10, sortBy, sortType } = req.query;
     page = isNaN(page) ? 1 : Number(page)
     limit = isNaN(limit) ? 10 : Number(limit)
