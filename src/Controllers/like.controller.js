@@ -99,9 +99,9 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
-    let page,limit;
-     page = isNaN(page) ? 1 : Number(page)
-     limit = isNaN(page) ? 10 : Number(limit)
+    let page, limit;
+    page = isNaN(page) ? 1 : Number(page)
+    limit = isNaN(page) ? 10 : Number(limit)
 
     const videos = await Like.aggregate([
         {
@@ -124,25 +124,22 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                             VideoFile: 1,
                             Thumbnail: 1,
                             Title: 1,
-                            views: 1
+                            views: 1,
+                            owner: 1
                         }
                     }
                 ]
             }
         },
+
         {
             $addFields: {
                 LikedVideos: {
-                    $first: "$Likedvideos"
-                }
+                    $first: "$Likedvideos",
+                },
             }
         },
-        {
-            $project: {
-                LikedVideos: 1,
-                _id: 0
-            }
-        },
+
         {
             $replaceRoot: { newRoot: "$LikedVideos" }
         }

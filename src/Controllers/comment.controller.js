@@ -83,7 +83,6 @@ const addComment = asyncHandler(async (req, res) => {
     if (!video) {
         throw new ApiError(401, "Video is not avaliable")
     }
-    console.log(content)
     if (!content) {
         throw new ApiError(400, "content is Required for the comment !!")
     }

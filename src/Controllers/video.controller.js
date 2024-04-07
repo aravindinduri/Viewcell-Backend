@@ -1,17 +1,16 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { Video } from "../models/videos.models.js"
-import { User } from "../models/user.models.js"
 import { ApiError } from "../utils/apiError.js"
 import { APiResponce } from "../utils/apiResponce.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/Cloudinary.js"
 import { Like } from "../models/like.model.js"
 import { Comment } from "../models/comment.model.js"
+import { User } from "../models/user.models.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
     let { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
-    //TODO: get all videos based on query, sort, pagination
 
     page = isNaN(page) ? 1 : Number(page)
     limit = isNaN(limit) ? 10 : Number(limit)
@@ -96,6 +95,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         skipStage,
         limitStage
     ])
+
     res
         .status(200)
         .json(
@@ -106,7 +106,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
 )
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    console.log('asdcv')
     const { title, description } = req.body
 
     if (!(title?.trim()) || !(description?.trim())) {
@@ -143,7 +142,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
         Duration: Math.round(videoFile.duration)
 
     })
-    console.log(video._id)
     res
         .status(200)
         .json(
@@ -205,10 +203,16 @@ const getVideoById = asyncHandler(async (req, res) => {
     if (video.length > 0) {
         video = video[0]
     }
+    await User.findByIdAndUpdate(req.user?._id,{
+            $push : {
+                watchHistory : videoId
+            }
+    })
     await Video.findByIdAndUpdate(videoId, {
         $set: {
             views: video.views
         }
+    
     })
 
     res

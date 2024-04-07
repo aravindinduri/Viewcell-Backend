@@ -92,7 +92,7 @@ const registerUser = asyncHandler(async (req, res) => {
    if (!createUser) {
       throw new ApiError(500, "Something went wrong while creating User");
    }
-   // console.log(createUser)
+   console.log(createUser)
    //Return Responce.
 
    return res.status(201).json(
@@ -318,7 +318,6 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 });
 
-//Testing not done.
 const getUserCurrentProfile = asyncHandler(async (req, res) => {
    const { username } = req.params;
    if (!username?.trim()) {
@@ -388,55 +387,65 @@ const getUserCurrentProfile = asyncHandler(async (req, res) => {
 });
 
 
-const getWatchHistory = asyncHandler(async (req, res) => {
+const getWatchHistory = asyncHandler(async(req, res) => {
    const user = await User.aggregate([
-      {
-         $match: {
-            _id: new mongoose.Types.ObjectId(req.user._id)
-         }
-      },
-      {
-         $lookup: {
-            from: "videos",
-            localField: "watchHistory",
-            foreignField: "_id",
-            as: "watchHistory",
-            pipeline: [
-               {
-                  $lookup: {
-                     from: "users",
-                     localField: "owner",
-                     foreignField: "_id",
-                     as: "owner",
-                     pipeline: [
-                        {
-                           $project: {
-                              fullname: 1,
-                              username: 1,
-                              avatar: 1
+       {
+           $match: {
+               _id: new mongoose.Types.ObjectId(req.user._id)
+           }
+       },
+       {
+           $lookup: {
+               from: "videos",
+               localField: "watchHistory",
+               foreignField: "_id",
+               as: "watchHistory",
+               pipeline: [
+                   {
+                       $lookup: {
+                           from: "users",
+                           localField: "owner",
+                           foreignField: "_id",
+                           as: "owner",
+                           pipeline: [
+                               {
+                                   $project: {
+                                       fullName: 1,
+                                       username: 1,
+                                       avatar: 1
+                                   }
+                               }
+                           ]
+                       }
+                   },
+                   {
+                       $addFields:{
+                           owner:{
+                               $first: "$owner"
+                           },
+                           watchHistory : {
+                              $first : "$watchHistory"
                            }
-                        }
-                     ]
-                  }
-               },
-               {
-                  $addFields : {
-                     owner :{
-                        $first :"$owner"
-                     }
-                  }
-               }
+                       }
+                   }
+               ]
+           }
+       }
+   ])
 
-            ]
-         }
-      }
-   ]);
    return res
    .status(200)
    .json(
-      new APiResponce(200,user[0].watchHistory,"watch History fetched Succesfully")
+       new APiResponce(
+           200,
+           user[0].watchHistory,
+           "Watch history fetched successfully"
+       )
    )
-});
+})
+
+
+// Define ApiError and APiResponce classes or functions if they are not already defined
 
 
 
