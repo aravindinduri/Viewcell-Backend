@@ -54,14 +54,14 @@ const registerUser = asyncHandler(async (req, res) => {
    // const coverImageLocalpath = req.files?.coverImage[0].path;
 
    let coverImageLocalPath;
-    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-        coverImageLocalPath = req.files.coverImage[0].path
-    }
-//     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
-//       avatarLocalpath = req.files.avatar[0].path
-//   }
+   if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+      coverImageLocalPath = req.files.coverImage[0].path
+   }
+   //     if (req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0) {
+   //       avatarLocalpath = req.files.avatar[0].path
+   //   }
 
-  console.log(avatarLocalpath)
+   console.log(avatarLocalpath)
    if (!avatarLocalpath) {
       throw new ApiError(400, "Avatar is required");
    }
@@ -109,7 +109,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
    // (1):
    const { email, username, password } = req.body;
- 
+
    if (!(email || username)) {
       throw new ApiError(400, "email or username required");
    }
@@ -142,7 +142,7 @@ const loginUser = asyncHandler(async (req, res) => {
          new APiResponce(
             200,
             {
-               user: logedInUser, accessToken,refreshToken
+               user: logedInUser, accessToken, refreshToken
             },
             " User Logged Succesfully "
          )
@@ -205,12 +205,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
       return res
          .status(200)
-         .cookie("accessToken", accessToken,options)
-         .cookie("refreshToken", newRefreshToken,options)
+         .cookie("accessToken", accessToken, options)
+         .cookie("refreshToken", newRefreshToken, options)
          .json(
             new APiResponce(
                200,
-               {accessToken,refreshToken: newRefreshToken },
+               { accessToken, refreshToken: newRefreshToken },
                "Access Token Refreshed"
             )
          )
@@ -246,8 +246,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-   const { fullname, email } = req.body;
-   if (!fullname || !email) {
+   const { fullname, email, username } = req.body;
+   if (!fullname || !email || !username) {
       throw new ApiError(400, "All Fields are Required");
    }
 
@@ -255,7 +255,8 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       {
          $set: {
             fullname: fullname,
-            email: email
+            email: email,
+            username: username
          }
       },
       { new: true }
@@ -354,7 +355,7 @@ const getUserCurrentProfile = asyncHandler(async (req, res) => {
             channelsSubscribedToCount: {
                $size: "$subcribedTo"
             }
-         },      
+         },
          isSubcribed: {
             $cond: {
                if: { $in: [req.user?._id, "$subcribers.subcriber"] },
@@ -387,65 +388,64 @@ const getUserCurrentProfile = asyncHandler(async (req, res) => {
 });
 
 
-const getWatchHistory = asyncHandler(async(req, res) => {
+const getWatchHistory = asyncHandler(async (req, res) => {
    const user = await User.aggregate([
-       {
-           $match: {
-               _id: new mongoose.Types.ObjectId(req.user._id)
-           }
-       },
-       {
-           $lookup: {
-               from: "videos",
-               localField: "watchHistory",
-               foreignField: "_id",
-               as: "watchHistory",
-               pipeline: [
-                   {
-                       $lookup: {
-                           from: "users",
-                           localField: "owner",
-                           foreignField: "_id",
-                           as: "owner",
-                           pipeline: [
-                               {
-                                   $project: {
-                                       fullName: 1,
-                                       username: 1,
-                                       avatar: 1
-                                   }
-                               }
-                           ]
-                       }
-                   },
-                   {
-                       $addFields:{
-                           owner:{
-                               $first: "$owner"
-                           },
-                           watchHistory : {
-                              $first : "$watchHistory"
+      {
+         $match: {
+            _id: new mongoose.Types.ObjectId(req.user._id)
+         }
+      },
+      {
+         $lookup: {
+            from: "videos",
+            localField: "watchHistory",
+            foreignField: "_id",
+            as: "watchHistory",
+            pipeline: [
+               {
+                  $lookup: {
+                     from: "users",
+                     localField: "owner",
+                     foreignField: "_id",
+                     as: "owner",
+                     pipeline: [
+                        {
+                           $project: {
+                              fullName: 1,
+                              username: 1,
+                              avatar: 1
                            }
-                       }
-                   }
-               ]
-           }
-       }
+                        }
+                     ]
+                  }
+               },
+               {
+                  $addFields: {
+                     owner: {
+                        $first: "$owner"
+                     },
+                     watchHistory: {
+                        $first: "$watchHistory"
+                     }
+                  }
+               }
+            ]
+         }
+      }
    ])
 
    return res
-   .status(200)
-   .json(
-       new APiResponce(
-           200,
-           user[0].watchHistory,
-           "Watch history fetched successfully"
-       )
-   )
+      .status(200)
+      .json(
+         new APiResponce(
+            200,
+            user[0].watchHistory,
+            "Watch history fetched successfully"
+         )
+      )
 })
 
 
-// Define ApiError and APiResponce classes or functions if they are not already defined
 
 
 
