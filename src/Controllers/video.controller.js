@@ -106,6 +106,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 )
 
 const publishAVideo = asyncHandler(async (req, res) => {
+    console.log('   qwef')
     const { title, description } = req.body
 
     if (!(title?.trim()) || !(description?.trim())) {

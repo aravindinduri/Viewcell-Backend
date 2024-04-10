@@ -10,10 +10,7 @@ app.use(cors({
     credentials :true,
 }));
 
-app.get('/',(req,res)=>{
-let path = '/home/aravind/Desktop/Codes/web_devlopment/Backend/Video_con_project/frontend/index.html'
-  res.sendFile(path);
-})
+
 
 app.use(express.json({limit :"20kb"}));
 app.use(express.urlencoded({extended : true}));
