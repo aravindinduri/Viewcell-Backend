@@ -128,8 +128,11 @@ const loginUser = asyncHandler(async (req, res) => {
 
    const { accessToken, refreshToken } = await generateAccessandRefreshTokens(user._id);
 
+   const options = {
+      httpOnly: true,
+      secure: true
+  }
    const logedInUser = await User.findById(user._id).select("-password -refreshToken");
-   console.log('wwdfvc')
    return res
       .status(200)
       .cookie("accessToken", accessToken, options)
