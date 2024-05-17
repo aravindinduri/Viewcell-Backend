@@ -278,8 +278,8 @@ const deleteVideo = asyncHandler(async (req, res) => {
         throw new ApiError(300, "unauthorized request")
     }
     const { _id, thumbnail, videoFile } = video;
-    const deleteResponce = await Video.findByIdAndDelete(_id);
-    console.log(deleteResponce)
+    const deleteResponce = await Video.findByIdAndDelete(_id)
+    
     if (deleteResponce) {
         await Promise.all([
             Like.deleteMany({ video: _id }),

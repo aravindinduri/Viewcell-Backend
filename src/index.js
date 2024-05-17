@@ -4,9 +4,7 @@ import app from "./app.js";
 
 dotenv.config({path:'./env'});
 
-app.use('/',(req,res)=>{
-  res.json({1 :  'workong fine'})
-})
+
 
 connectDB()
 .then(() => {

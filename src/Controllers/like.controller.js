@@ -1,4 +1,5 @@
 import mongoose, { isValidObjectId } from "mongoose"
+import {User} from "../models/user.models.js"
 import { Like } from "../models/like.model.js"
 import { Video } from "../models/videos.models.js"
 import { ApiError } from "../utils/apiError.js"
@@ -98,7 +99,6 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 )
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-    //TODO: get all liked videos
     let page, limit;
     page = isNaN(page) ? 1 : Number(page)
     limit = isNaN(page) ? 10 : Number(limit)
@@ -144,7 +144,12 @@ const getLikedVideos = asyncHandler(async (req, res) => {
             $replaceRoot: { newRoot: "$LikedVideos" }
         }
     ])
-
+    const owner = await User.findOne(videos.owner)
+    if(!owner)
+    {
+        throw new ApiError("Error while finding the owner")
+    }
+    videos.push(owner)
     if (!videos) {
         throw new ApiError(401, "Unable to Get Liked Videos")
     }
@@ -155,9 +160,32 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         )
 })
 
+const getVideoLikeStatus = asyncHandler(async (req, res) => {
+    const { videoId } = req.params
+    if (!videoId || !isValidObjectId(videoId)) {
+        throw new ApiError(401, "Video id is required")
+    }
+    const video = await Video.findById(videoId)
+    if (!video) {
+        throw new ApiError(401, "Video is not avaliable")
+    }
+
+    let likeStatus = await Like.findOne({ video: videoId, likedBy: req.user._id })
+
+    likeStatus =  likeStatus == null ? false : true 
+
+    res
+    .status(200)
+    .json(
+            new APiResponce(200, likeStatus, "Video like status sent succesfully")
+        )
+
+
+})
 export {
     toggleCommentLike,
     toggleTweetLike,
     toggleVideoLike,
-    getLikedVideos
+    getLikedVideos,
+    getVideoLikeStatus
 }
